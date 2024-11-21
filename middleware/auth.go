@@ -10,7 +10,7 @@ import (
 
 func Auth() gin.HandlerFunc {
 	return gin.HandlerFunc(func(ctx *gin.Context) {
-		cookie, err := ctx.Cookie("secret-key")
+		cookie, err := ctx.Cookie("session_token")
 
 		if ctx.Request.URL.Path == "/user/register" || ctx.Request.URL.Path == "/user/login" {
 			ctx.Next()
