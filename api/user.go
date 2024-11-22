@@ -74,8 +74,13 @@ func (u *userAPI) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, model.NewSuccessResponse(*token))// TODO: answer here
+	// Respons dalam format JSON sesuai ekspektasi
+	c.JSON(http.StatusOK, gin.H{
+		"message": "login success",
+		"token":   *token,
+	})
 }
+
 
 func (u *userAPI) GetUserTaskCategory(c *gin.Context) {
 	userTaskCategories, err := u.userService.GetUserTaskCategory()
