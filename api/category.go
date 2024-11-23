@@ -21,8 +21,8 @@ type categoryAPI struct {
 	categoryService service.CategoryService
 }
 
-func NewCategoryAPI(categoryService service.CategoryService) *categoryAPI {
-	return &categoryAPI{categoryService}
+func NewCategoryAPI(categoryRepo service.CategoryService) *categoryAPI {
+	return &categoryAPI{categoryRepo}
 }
 
 func (ct *categoryAPI) AddCategory(c *gin.Context) {
@@ -44,17 +44,18 @@ func (ct *categoryAPI) AddCategory(c *gin.Context) {
 func (ct *categoryAPI) UpdateCategory(c *gin.Context) {
 	categoryID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: "Invalid category ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: "invalid Category ID"})
 		return
 	}
 
-	var category model.Category
-	if err := c.ShouldBindJSON(&category); err != nil {
+	var updatedCategory model.Category
+	if err := c.ShouldBindJSON(&updatedCategory); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	err = ct.categoryService.Update(categoryID, category)
+	updatedCategory.ID = categoryID
+	err = ct.categoryService.Update(categoryID, updatedCategory)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Error: err.Error()})
 		return
@@ -82,7 +83,7 @@ func (ct *categoryAPI) DeleteCategory(c *gin.Context) {
 func (ct *categoryAPI) GetCategoryByID(c *gin.Context) {
 	categoryID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: "invalid Category ID"})
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: "Invalid category ID"})
 		return
 	}
 

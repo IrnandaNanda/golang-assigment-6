@@ -25,7 +25,9 @@ func NewTaskRepo(filebasedDb *filebased.Data) *taskRepository {
 }
 
 func (t *taskRepository) Store(task *model.Task) error {
-	return t.filebased.StoreTask(*task)
+	t.filebased.StoreTask(*task)
+
+	return nil
 }
 
 func (t *taskRepository) Update(task *model.Task) error {
@@ -45,7 +47,11 @@ func (t *taskRepository) Delete(id int) error {
 }
 
 func (t *taskRepository) GetByID(id int) (*model.Task, error) {
-	return t.filebased.GetTaskByID(id)
+	task, err := t.filebased.GetTaskByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
 }
 
 func (t *taskRepository) GetList() ([]model.Task, error) {

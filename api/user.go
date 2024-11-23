@@ -59,36 +59,33 @@ func (u *userAPI) Login(c *gin.Context) {
 	}
 
 	if user.Email == "" || user.Password == "" {
-		c.JSON(http.StatusBadRequest, model.NewErrorResponse("login data is empty"))
+		c.JSON(http.StatusBadRequest, model.NewErrorResponse("email or password is empty"))
 		return
 	}
 
-	var loginUser = model.User{
+	token, err := u.userService.Login(&model.User{
 		Email:    user.Email,
 		Password: user.Password,
-	}
-
-	token, err := u.userService.Login(&loginUser)
+	})
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, model.NewErrorResponse(err.Error()))
+		if err.Error() == "user not found" || err.Error() == "wrong email or password" {
+			c.JSON(http.StatusUnauthorized, model.NewErrorResponse(err.Error()))
+		} else {
+			c.JSON(http.StatusInternalServerError, model.NewErrorResponse("error internal server"))
+		}
 		return
 	}
 
-	// Respons dalam format JSON sesuai ekspektasi
-	c.JSON(http.StatusOK, gin.H{
-		"message": "login success",
-		"token":   *token,
-	})
+	c.SetCookie("session_token", *token, 3600, "/", "localhost", false, true)
+	c.JSON(http.StatusOK, gin.H{"user_id": user.Email, "message": "login success"})
 }
 
-
 func (u *userAPI) GetUserTaskCategory(c *gin.Context) {
-	userTaskCategories, err := u.userService.GetUserTaskCategory()
+	userTasks, err := u.userService.GetUserTaskCategory()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
+		c.JSON(http.StatusInternalServerError, model.NewErrorResponse("error internal server"))
 		return
 	}
 
-	c.JSON(http.StatusOK, userTaskCategories)
-	// TODO: answer here
+	c.JSON(http.StatusOK, userTasks)
 }

@@ -22,21 +22,43 @@ func NewCategoryService(categoryRepository repo.CategoryRepository) CategoryServ
 }
 
 func (c *categoryService) Store(category *model.Category) error {
-	return c.categoryRepository.Store(category)
+	err := c.categoryRepository.Store(category)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *categoryService) Update(id int, category model.Category) error {
-	return c.categoryRepository.Update(id, category)
+	err := c.categoryRepository.Update(id, category)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *categoryService) Delete(id int) error {
-	return c.categoryRepository.Delete(id)
+	err := c.categoryRepository.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *categoryService) GetByID(id int) (*model.Category, error) {
-	return c.categoryRepository.GetByID(id)
+	category, err := c.categoryRepository.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return category, nil
 }
 
 func (c *categoryService) GetList() ([]model.Category, error) {
-	return c.categoryRepository.GetList()
+	categories, err := c.categoryRepository.GetList()
+	if err != nil {
+		return nil, err
+	}
+	return categories, nil
 }

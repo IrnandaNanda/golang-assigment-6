@@ -15,15 +15,15 @@ type TaskAPI interface {
 	DeleteTask(c *gin.Context)
 	GetTaskByID(c *gin.Context)
 	GetTaskList(c *gin.Context)
-	GetTaskListByCategory(c *gin.Context)
+	GetTaskCategory(c *gin.Context)
 }
 
 type taskAPI struct {
 	taskService service.TaskService
 }
 
-func NewTaskAPI(taskService service.TaskService) *taskAPI {
-	return &taskAPI{taskService}
+func NewTaskAPI(taskRepo service.TaskService) *taskAPI {
+	return &taskAPI{taskRepo}
 }
 
 func (t *taskAPI) AddTask(c *gin.Context) {
@@ -49,14 +49,14 @@ func (t *taskAPI) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	var task model.Task
-	if err := c.ShouldBindJSON(&task); err != nil {
+	var updatedTask model.Task
+	if err := c.ShouldBindJSON(&updatedTask); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	task.ID = taskID
-	err = t.taskService.Update(&task)
+	updatedTask.ID = taskID
+	err = t.taskService.Update(&updatedTask)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Error: err.Error()})
 		return
@@ -107,18 +107,18 @@ func (t *taskAPI) GetTaskList(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-func (t *taskAPI) GetTaskListByCategory(c *gin.Context) {
+func (t *taskAPI) GetTaskCategory(c *gin.Context) {
 	categoryID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: "Invalid category ID"})
 		return
 	}
 
-	taskCategories, err := t.taskService.GetTaskCategory(categoryID)
+	tasks, err := t.taskService.GetTaskCategory(categoryID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, taskCategories)
+	c.JSON(http.StatusOK, tasks)
 }

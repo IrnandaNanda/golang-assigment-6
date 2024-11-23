@@ -40,8 +40,8 @@ func main() {
 
 	dbCredential := model.Credential{
 		Host:         "localhost",
-		Username:     "postgres",
-		Password:     "postgres",
+		Username:     "myuser",
+		Password:     "mypassword",
 		DatabaseName: "kampusmerdeka",
 		Port:         5432,
 		Schema:       "public",
@@ -90,11 +90,9 @@ func RunServer(gin *gin.Engine, filebasedDb *filebased.Data) *gin.Engine {
 
 	user := gin.Group("/user")
 	{
-		// TODO: answer here
-
-		user.Use(middleware.Auth())
 		user.POST("/register", apiHandler.UserAPIHandler.Register)
 		user.POST("/login", apiHandler.UserAPIHandler.Login)
+		user.Use(middleware.Auth())
 		user.GET("/tasks", apiHandler.UserAPIHandler.GetUserTaskCategory)
 	}
 
@@ -106,8 +104,7 @@ func RunServer(gin *gin.Engine, filebasedDb *filebased.Data) *gin.Engine {
 		task.PUT("/update/:id", apiHandler.TaskAPIHandler.UpdateTask)
 		task.DELETE("/delete/:id", apiHandler.TaskAPIHandler.DeleteTask)
 		task.GET("/list", apiHandler.TaskAPIHandler.GetTaskList)
-		task.GET("/category/:id", apiHandler.TaskAPIHandler.GetTaskListByCategory)
-		// TODO: answer here
+		task.GET("/category/:id", apiHandler.TaskAPIHandler.GetTaskCategory)
 	}
 
 	category := gin.Group("/category")
@@ -118,7 +115,6 @@ func RunServer(gin *gin.Engine, filebasedDb *filebased.Data) *gin.Engine {
 		category.PUT("/update/:id", apiHandler.CategoryAPIHandler.UpdateCategory)
 		category.DELETE("/delete/:id", apiHandler.CategoryAPIHandler.DeleteCategory)
 		category.GET("/list", apiHandler.CategoryAPIHandler.GetCategoryList)
-		// TODO: answer here
 	}
 
 	return gin

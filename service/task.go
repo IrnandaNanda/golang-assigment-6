@@ -22,26 +22,52 @@ func NewTaskService(taskRepository repo.TaskRepository) TaskService {
 	return &taskService{taskRepository}
 }
 
-func (s *taskService) Store(task *model.Task) error {
-	return s.taskRepository.Store(task)
+func (c *taskService) Store(task *model.Task) error {
+	err := c.taskRepository.Store(task)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *taskService) Update(task *model.Task) error {
-	return s.taskRepository.Update(task)
+	err := s.taskRepository.Update(task)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *taskService) Delete(id int) error {
-	return s.taskRepository.Delete(id)
+	err := s.taskRepository.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *taskService) GetByID(id int) (*model.Task, error) {
-	return s.taskRepository.GetByID(id)
+	task, err := s.taskRepository.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return task, nil
 }
 
 func (s *taskService) GetList() ([]model.Task, error) {
-	return s.taskRepository.GetList()
+	tasks, err := s.taskRepository.GetList()
+	if err != nil {
+		return nil, err
+	}
+	return tasks, nil
 }
 
 func (s *taskService) GetTaskCategory(id int) ([]model.TaskCategory, error) {
-	return s.taskRepository.GetTaskCategory(id)
+	taskCategories, err := s.taskRepository.GetTaskCategory(id)
+	if err != nil {
+		return nil, err
+	}
+	return taskCategories, nil
 }
